@@ -1,0 +1,72 @@
+void PushUp(int rt)
+{
+    sum[rt]=sum[rt<<1]+sum[rt<<1|1];
+    //左右孩子lazy标记相等，证明往下压了，还原
+    lazy[rt]=(lazy[rt<<1]==lazy[rt<<1|1])?lazy[rt<<1]:0;
+}
+void PushDown(int rt,int len)
+{
+    if(!lazy[rt])return;
+    //lazy标记下压
+    lazy[rt<<1]=lazy[rt<<1|1]=lazy[rt];
+    //左孩子和变为加上的值*长度，右儿子同理
+    sum[rt<<1]=lazy[rt]*(len-(len>>1)),sum[rt<<1|1]=lazy[rt]*(len>>1);
+    //lazy清空
+    lazy[rt]=0;
+}
+//把区间[L,R]变为c
+void Modify(int L,int R,int c,int l,int r,int rt)
+{
+    if(L<=l&&r<=R)
+    {
+        //当前的lazy为c，总和为(r-l+1)*1LL*c
+        lazy[rt]=c,sum[rt]=(r-l+1)*1LL*c;
+        return;
+    }
+    //如果lazy有标记，把lazy标记下压
+    PushDown(rt,r-l+1);
+    int mid=(l+r)>>1;
+    //和左区间相交，更新
+    if(L<=mid)Modify(L,R,c,lson);
+    //右区间相交，更新
+    if(R>mid)Modify(L,R,c,rson);
+    //把左右孩子压回来
+    PushUp(rt);
+}
+
+void PushUp(int rt)
+{
+    sum[rt]=sum[rt<<1]+sum[rt<<1|1];
+    //左右孩子lazy标记相等，证明往下压了，还原
+    lazy[rt]=(lazy[rt<<1]==lazy[rt<<1|1])?lazy[rt<<1]:0;
+}
+void PushDown(int rt,int len)
+{
+    if(!lazy[rt])return;
+    //lazy标记下压
+    lazy[rt<<1]+=lazy[rt];
+    lazy[rt<<1|1]+=lazy[rt];
+    //左孩子和加上标记*长度，右儿子同理
+    sum[rt<<1]+=lazy[rt]*(len-(len>>1)),sum[rt<<1|1]+=lazy[rt]*(len>>1);
+    //lazy清空
+    lazy[rt]=0;
+}
+//把区间[L,R]变为c
+void Modify(int L,int R,int c,int l,int r,int rt)
+{
+    if(L<=l&&r<=R)
+    {
+        //当前的lazy为c，总和为(r-l+1)*1LL*c
+        lazy[rt]+=c,sum[rt]+=(r-l+1)*1LL*c;
+        return;
+    }
+    //如果lazy有标记，把lazy标记下压
+    PushDown(rt,r-l+1);
+    int mid=(l+r)>>1;
+    //和左区间相交，更新
+    if(L<=mid)Modify(L,R,c,lson);
+    //右区间相交，更新
+    if(R>mid)Modify(L,R,c,rson);
+    //把左右孩子压回来
+    PushUp(rt);
+}
